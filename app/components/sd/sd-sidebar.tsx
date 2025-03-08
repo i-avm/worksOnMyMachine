@@ -1,11 +1,10 @@
 import { IconButton } from "@/app/components/button";
-import GithubIcon from "@/app/icons/github.svg";
 import SDIcon from "@/app/icons/sd.svg";
 import ReturnIcon from "@/app/icons/return.svg";
 import HistoryIcon from "@/app/icons/history.svg";
 import Locale from "@/app/locales";
 
-import { Path, REPO_URL } from "@/app/constant";
+import { Path } from "@/app/constant";
 
 import { useNavigate } from "react-router-dom";
 import dynamic from "next/dynamic";
@@ -13,14 +12,11 @@ import {
   SideBarContainer,
   SideBarBody,
   SideBarHeader,
-  SideBarTail,
   useDragSideBar,
   useHotKey,
 } from "@/app/components/sidebar";
 
-import { getParams, getModelParamBasicData } from "./sd-panel";
 import { useSdStore } from "@/app/store/sd";
-import { showToast } from "@/app/components/ui-lib";
 import { useMobileScreen } from "@/app/utils";
 
 const SdPanel = dynamic(
@@ -40,32 +36,32 @@ export function SideBar(props: { className?: string }) {
   const params = sdStore.currentParams;
   const setParams = sdStore.setCurrentParams;
 
-  const handleSubmit = () => {
-    const columns = getParams?.(currentModel, params);
-    const reqParams: any = {};
-    for (let i = 0; i < columns.length; i++) {
-      const item = columns[i];
-      reqParams[item.value] = params[item.value] ?? null;
-      if (item.required) {
-        if (!reqParams[item.value]) {
-          showToast(Locale.SdPanel.ParamIsRequired(item.name));
-          return;
-        }
-      }
-    }
-    let data: any = {
-      model: currentModel.value,
-      model_name: currentModel.name,
-      status: "wait",
-      params: reqParams,
-      created_at: new Date().toLocaleString(),
-      img_data: "",
-    };
-    sdStore.sendTask(data, () => {
-      setParams(getModelParamBasicData(columns, params, true));
-      navigate(Path.SdNew);
-    });
-  };
+  // const handleSubmit = () => {
+  //   const columns = getParams?.(currentModel, params);
+  //   const reqParams: any = {};
+  //   for (let i = 0; i < columns.length; i++) {
+  //     const item = columns[i];
+  //     reqParams[item.value] = params[item.value] ?? null;
+  //     if (item.required) {
+  //       if (!reqParams[item.value]) {
+  //         showToast(Locale.SdPanel.ParamIsRequired(item.name));
+  //         return;
+  //       }
+  //     }
+  //   }
+  //   let data: any = {
+  //     model: currentModel.value,
+  //     model_name: currentModel.name,
+  //     status: "wait",
+  //     params: reqParams,
+  //     created_at: new Date().toLocaleString(),
+  //     img_data: "",
+  //   };
+  //   sdStore.sendTask(data, () => {
+  //     setParams(getModelParamBasicData(columns, params, true));
+  //     navigate(Path.SdNew);
+  //   });
+  // };
 
   return (
     <SideBarContainer
@@ -120,7 +116,7 @@ export function SideBar(props: { className?: string }) {
       <SideBarBody>
         <SdPanel />
       </SideBarBody>
-      <SideBarTail
+      {/* <SideBarTail
         primaryAction={
           <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
             <IconButton icon={<GithubIcon />} shadow />
@@ -134,7 +130,7 @@ export function SideBar(props: { className?: string }) {
             onClick={handleSubmit}
           ></IconButton>
         }
-      />
+      /> */}
     </SideBarContainer>
   );
 }

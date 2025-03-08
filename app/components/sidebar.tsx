@@ -4,14 +4,10 @@ import styles from "./home.module.scss";
 
 import { IconButton } from "./button";
 import SettingsIcon from "../icons/settings.svg";
-import GithubIcon from "../icons/github.svg";
-import ChatGptIcon from "../icons/chatgpt.svg";
+import HexnodeGenieIcon from "../icons/logo.svg";
 import AddIcon from "../icons/add.svg";
 import DeleteIcon from "../icons/delete.svg";
-import MaskIcon from "../icons/mask.svg";
-import McpIcon from "../icons/mcp.svg";
 import DragIcon from "../icons/drag.svg";
-import DiscoveryIcon from "../icons/discovery.svg";
 
 import Locale from "../locales";
 
@@ -23,13 +19,12 @@ import {
   MIN_SIDEBAR_WIDTH,
   NARROW_SIDEBAR_WIDTH,
   Path,
-  REPO_URL,
 } from "../constant";
 
 import { Link, useNavigate } from "react-router-dom";
 import { isIOS, useMobileScreen } from "../utils";
 import dynamic from "next/dynamic";
-import { Selector, showConfirm } from "./ui-lib";
+import { showConfirm } from "./ui-lib";
 import clsx from "clsx";
 import { isMcpEnabled } from "../mcp/actions";
 
@@ -61,6 +56,13 @@ export function useHotKey() {
     return () => window.removeEventListener("keydown", onKeyDown);
   });
 }
+
+const SdPanel = dynamic(
+  async () => (await import("@/app/components/sd")).SdPanel,
+  {
+    loading: () => null,
+  },
+);
 
 export function useDragSideBar() {
   const limit = (x: number) => Math.min(MAX_SIDEBAR_WIDTH, x);
@@ -176,6 +178,7 @@ export function SideBarHeader(props: {
   children?: React.ReactNode;
   shouldNarrow?: boolean;
 }) {
+  debugger;
   const { title, subTitle, logo, children, shouldNarrow } = props;
   return (
     <Fragment>
@@ -252,7 +255,7 @@ export function SideBar(props: { className?: string }) {
       <SideBarHeader
         title="WorksOnMyMachine"
         subTitle="bla bla bla"
-        logo={<ChatGptIcon />}
+        logo={<HexnodeGenieIcon />}
         shouldNarrow={shouldNarrow}
       >
         <div className={styles["sidebar-header-bar"]}>
@@ -312,7 +315,16 @@ export function SideBar(props: { className?: string }) {
           }
         }}
       >
-        <ChatList narrow={shouldNarrow} />
+        <SdPanel />
+        {window.location.href.endsWith("/dashboard") ||
+        window.location.href.endsWith("/submit-meeting-summary") ? null : (
+          <>
+            <div>
+              <p className="font-weight:bold">Recent chats</p>
+            </div>
+            <ChatList narrow={shouldNarrow} />
+          </>
+        )}
       </SideBarBody>
       <SideBarTail
         primaryAction={
@@ -349,19 +361,22 @@ export function SideBar(props: { className?: string }) {
           </>
         }
         secondaryAction={
-          <IconButton
-            icon={<AddIcon />}
-            text={shouldNarrow ? undefined : Locale.Home.NewChat}
-            onClick={() => {
-              if (config.dontShowMaskSplashScreen) {
-                chatStore.newSession();
-                navigate(Path.Chat);
-              } else {
-                navigate(Path.NewChat);
-              }
-            }}
-            shadow
-          />
+          window.location.href.endsWith("/dashboard") ||
+          window.location.href.endsWith("/submit-meeting-summary") ? null : (
+            <IconButton
+              icon={<AddIcon />}
+              text={shouldNarrow ? undefined : Locale.Home.NewChat}
+              onClick={() => {
+                if (config.dontShowMaskSplashScreen) {
+                  chatStore.newSession();
+                  navigate(Path.Chat);
+                } else {
+                  navigate(Path.NewChat);
+                }
+              }}
+              shadow
+            />
+          )
         }
       />
     </SideBarContainer>

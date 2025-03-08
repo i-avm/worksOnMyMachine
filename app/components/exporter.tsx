@@ -21,7 +21,7 @@ import {
 
 import CopyIcon from "../icons/copy.svg";
 import LoadingIcon from "../icons/three-dots.svg";
-import ChatGptIcon from "../icons/chatgpt.png";
+import HexnodeGenieIcon from "../icons/hexnode_genie_icon.svg";
 import ShareIcon from "../icons/share.svg";
 
 import DownloadIcon from "../icons/download.svg";
@@ -516,7 +516,7 @@ export function ImagePreviewer(props: {
         <div className={styles["chat-info"]}>
           <div className={clsx(styles["logo"], "no-dark")}>
             <NextImage
-              src={ChatGptIcon.src}
+              src={HexnodeGenieIcon.src}
               alt="logo"
               width={50}
               height={50}

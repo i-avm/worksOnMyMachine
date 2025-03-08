@@ -89,6 +89,10 @@ const SubmitMeetingSummary = dynamic(
   },
 );
 
+const Dashboard = dynamic(async () => (await import("./dashboard")).Dashboard, {
+  loading: () => <Loading noLogo />,
+});
+
 export function useSwitchTheme() {
   const config = useAppConfig();
 
@@ -198,7 +202,7 @@ function Screen() {
           className={clsx({
             [styles["sidebar-show"]]: isHome,
           })}
-        />
+        ></SideBar>
         <WindowContent>
           <Routes>
             <Route path={Path.Home} element={<Chat />} />
@@ -209,7 +213,11 @@ function Screen() {
             <Route path={Path.Chat} element={<Chat />} />
             <Route path={Path.Settings} element={<Settings />} />
             <Route path={Path.McpMarket} element={<McpMarketPage />} />
-            <Route path={Path.SubmitMeetingSummary} element={<SubmitMeetingSummary />} />
+            <Route
+              path={Path.SubmitMeetingSummary}
+              element={<SubmitMeetingSummary />}
+            />
+            <Route path={Path.Dashboard} element={<Dashboard />} />
           </Routes>
         </WindowContent>
       </>

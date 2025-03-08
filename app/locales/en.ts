@@ -836,7 +836,7 @@ const en: LocaleType = {
     },
   },
   Sd: {
-    SubTitle: (count: number) => `${count} images`,
+    SubTitle: (count: number) => ``,
     Actions: {
       Params: "See Params",
       Copy: "Copy Prompt",
@@ -845,7 +845,7 @@ const en: LocaleType = {
       ReturnHome: "Return Home",
       History: "History",
     },
-    EmptyRecord: "No images yet",
+    EmptyRecord: "",
     Status: {
       Name: "Status",
       Success: "Success",

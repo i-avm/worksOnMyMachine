@@ -52,7 +52,8 @@ export enum Path {
   Artifacts = "/artifacts",
   SearchChat = "/search-chat",
   McpMarket = "/mcp-market",
-  SubmitMeetingSummary = '/submit-meeting-summary'
+  SubmitMeetingSummary = "/submit-meeting-summary",
+  Dashboard = "/dashboard",
 }
 
 export enum ApiPath {

@@ -35,7 +35,6 @@ import {
 import { removeImage } from "@/app/utils/chat";
 import { SideBar } from "./sd-sidebar";
 import { WindowContent } from "@/app/components/home";
-import { params } from "./sd-panel";
 import clsx from "clsx";
 
 function getSdTaskStatus(item: any) {
@@ -127,7 +126,7 @@ export function Sd() {
                 chatStyles["chat-body-title"],
               )}
             >
-              <div className={`window-header-main-title`}>Stability AI</div>
+              <div className={`window-header-main-title`}></div>
               <div className="window-header-sub-title">
                 {Locale.Sd.SubTitle(sdImages.length || 0)}
               </div>
@@ -248,17 +247,17 @@ export function Sd() {
                                             label = Locale.SdPanel.OutFormat;
                                             value = value?.toUpperCase();
                                             break;
-                                          case "style":
-                                            label = Locale.SdPanel.ImageStyle;
-                                            value = params
-                                              .find(
-                                                (item) =>
-                                                  item.value === "style",
-                                              )
-                                              ?.options?.find(
-                                                (item) => item.value === value,
-                                              )?.name;
-                                            break;
+                                          // case "style":
+                                          //   label = Locale.SdPanel.ImageStyle;
+                                          //   value = params
+                                          //     .find(
+                                          //       (item) =>
+                                          //         item.value === "style",
+                                          //     )
+                                          //     ?.options?.find(
+                                          //       (item) => item.value === value,
+                                          //     )?.name;
+                                          //   break;
                                           default:
                                             break;
                                         }
