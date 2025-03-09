@@ -808,22 +808,31 @@ export const useChatStore = createPersistStore(
         updater: (session: ChatSession) => void,
       ) {
         // Overriding targetSession object
-        if (targetSession?.messages?.length > 0) {
+
+        const messagesCount = localStorage.getItem('messages_count')
+
+
+        if (targetSession?.messages?.length > parseInt(messagesCount as string,10)) {
           const localStorageData =
             localStorage.getItem("ai_response_message") ?? "";
 
           targetSession.messages.forEach((message, index) => {
-            if (index === targetSession.messages.length - 1) {
-              message.content = localStorageData;
-            }
 
             if (message?.model !== "") {
               message.model = "hexnode-bot";
             }
           });
 
+          debugger
+          const lastIndex = targetSession.messages.length
+          targetSession.messages[lastIndex -1].content = localStorageData
+
+
+
           targetSession.mask.modelConfig.model = "hexnode-bot";
         }
+
+        localStorage.setItem('messages_count',`${targetSession?.messages?.length}`)
 
         const sessions = get().sessions;
         const index = sessions.findIndex((s) => s.id === targetSession.id);

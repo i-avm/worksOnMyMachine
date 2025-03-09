@@ -1094,8 +1094,12 @@ function _Chat() {
     // Request to our backend happens here
 
     setIsLoading(true);
+    // @ts-ignore
+    document.getElementById("chat-input").style.color = "white"; 
     const { answer } = await chatStore.sendAIQuery(userInput);
     localStorage.setItem("ai_response_message", answer);
+    // @ts-ignore
+    document.getElementById("chat-input").style.color = ""; 
 
     // Old Flow from here
     const matchCommand = chatCommands.match(userInput);
