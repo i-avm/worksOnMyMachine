@@ -675,9 +675,9 @@ export const useChatStore = createPersistStore(
         const [model, providerName] = modelConfig.compressModel
           ? [modelConfig.compressModel, modelConfig.compressProviderName]
           : getSummarizeModel(
-            session.mask.modelConfig.model,
-            session.mask.modelConfig.providerName,
-          );
+              session.mask.modelConfig.model,
+              session.mask.modelConfig.providerName,
+            );
         const api: ClientApi = getClientApi(providerName as ServiceProvider);
 
         // remove error messages if any
@@ -718,8 +718,8 @@ export const useChatStore = createPersistStore(
                 get().updateTargetSession(
                   session,
                   (session) =>
-                  (session.topic =
-                    message.length > 0 ? trimTopic(message) : DEFAULT_TOPIC),
+                    (session.topic =
+                      message.length > 0 ? trimTopic(message) : DEFAULT_TOPIC),
                 );
               }
             },
@@ -807,15 +807,22 @@ export const useChatStore = createPersistStore(
         targetSession: ChatSession,
         updater: (session: ChatSession) => void,
       ) {
-        debugger
-
-        const lastMessageIndex = targetSession?.messages?.length - 1
-
         // Overriding targetSession object
-        if(lastMessageIndex >= 0){
-          targetSession.messages[lastMessageIndex].content = localStorage.getItem('ai_response_message') ?? ''
+        if (targetSession?.messages?.length > 0) {
+          const localStorageData =
+            localStorage.getItem("ai_response_message") ?? "";
 
-          targetSession.mask.modelConfig.model = 'hexnode-bot'
+          targetSession.messages.forEach((message, index) => {
+            if (index === targetSession.messages.length - 1) {
+              message.content = localStorageData;
+            }
+
+            if (message?.model !== "") {
+              message.model = "hexnode-bot";
+            }
+          });
+
+          targetSession.mask.modelConfig.model = "hexnode-bot";
         }
 
         const sessions = get().sessions;
@@ -838,9 +845,12 @@ export const useChatStore = createPersistStore(
       // our own request handler
 
       async sendAIQuery(query: string) {
-        const response = await axios.get(`http://192.168.28.171:8000/ask?query=${query}`, {})
+        const response = await axios.get(
+          `http://192.168.28.171:8000/ask?query=${query}`,
+          {},
+        );
 
-        return response?.data
+        return response?.data;
       },
 
       /** check if the message contains MCP JSON and execute the MCP action */

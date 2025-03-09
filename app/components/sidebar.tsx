@@ -4,7 +4,7 @@ import styles from "./home.module.scss";
 
 import { IconButton } from "./button";
 import SettingsIcon from "../icons/settings.svg";
-import HexnodeGenieIcon from "../icons/logo.svg";
+import HexnodeGenieIcon from "../icons/hexnode_genie_icon.svg";
 import AddIcon from "../icons/add.svg";
 import DeleteIcon from "../icons/delete.svg";
 import DragIcon from "../icons/drag.svg";
@@ -178,7 +178,6 @@ export function SideBarHeader(props: {
   children?: React.ReactNode;
   shouldNarrow?: boolean;
 }) {
-  debugger;
   const { title, subTitle, logo, children, shouldNarrow } = props;
   return (
     <Fragment>

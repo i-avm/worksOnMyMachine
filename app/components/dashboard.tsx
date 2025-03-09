@@ -1,4 +1,6 @@
-import React from "react";
+// @ts-nocheck
+
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Grid,
@@ -15,91 +17,90 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  CircularProgress,
 } from "@mui/material";
 
-// Sample Jira Data (Replace with API Data)
-const jiraTasks = [
-  {
-    id: "10000",
-    key: "SCRUM-1",
-    summary: "Test Story 1",
-    priority: "High",
-    status: "To Do",
-    sprint: { name: "SCRUM Sprint 1", state: "active" },
-    isblocks: [
-      {
-        id: "10002",
-        key: "SCRUM-3",
-        priority: "Low",
-        summary: "Test Story 2",
-      },
-    ],
-    isblockedby: [],
-  },
-  {
-    id: "10001",
-    key: "SCRUM-2",
-    summary: "Test Epic 1",
-    priority: "Medium",
-    status: "To Do",
-    sprint: null,
-    isblocks: [],
-    isblockedby: [],
-  },
-  {
-    id: "10002",
-    key: "SCRUM-3",
-    summary: "Test Story 2",
-    priority: "Low",
-    status: "To Do",
-    sprint: { name: "SCRUM Sprint 1", state: "active" },
-    isblocks: [],
-    isblockedby: [
-      {
-        id: "10000",
-        key: "SCRUM-1",
-        priority: "High",
-        summary: "Test Story 1",
-      },
-    ],
-  },
-];
+import axios from "axios";
 
 export function Dashboard() {
+  const [jiraTasks, setJiraTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const fetchAnalytics = async () => {
+      const { data } = await axios.get(
+        "http://192.168.28.171:8000/get_jira_data",
+      );
+      setJiraTasks(data?.data);
+      setLoading(false);
+    };
+
+    fetchAnalytics();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+        }}
+      >
+        <CircularProgress />
+        <Typography sx={{ mt: 2 }}>Loading Analytics...</Typography>
+      </Box>
+    );
+  }
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
+    <Container
+      maxWidth="lg"
+      sx={{ mt: 4, height: "90vh", display: "flex", flexDirection: "column" }}
+    >
       {/* Title */}
       <Typography variant="h4" gutterBottom>
-        Jira Task Analytics Dashboard
+        Jira Analytics
       </Typography>
 
-      {/* Summary Cards */}
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <SummaryCards tasks={jiraTasks} />
-        </Grid>
-      </Grid>
+      {/* Summary Cards (Sticky at top) */}
+      <Box sx={{ mb: 2 }}>
+        <SummaryCards tasks={jiraTasks} />
+      </Box>
 
-      {/* Sprint Progress */}
-      <Grid container spacing={2} sx={{ mt: 2 }}>
-        <Grid item xs={12} md={6}>
-          <SprintProgress tasks={jiraTasks} />
-        </Grid>
-      </Grid>
+      {/* Scrollable Content */}
+      <Box sx={{ flex: 1, overflow: "auto", maxHeight: "75vh", p: 1 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <SprintProgress tasks={jiraTasks} />
+          </Grid>
 
-      {/* Assigned Tasks & Blocking Tasks */}
-      <Grid container spacing={2} sx={{ mt: 3 }}>
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2 }}>
-            <AssignedTasks tasks={jiraTasks} />
-          </Paper>
+          <Grid item xs={12} md={6}>
+            <SprintProgress tasks={jiraTasks} />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Paper sx={{ p: 2 }}>
+              <BlockingTasks tasks={jiraTasks} />
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Paper sx={{ p: 2 }}>
+              <UpcomingDueTasks tasks={jiraTasks} />
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Paper sx={{ p: 2 }}>
+              <AssignedTasks tasks={jiraTasks} />
+            </Paper>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2 }}>
-            <BlockingTasks tasks={jiraTasks} />
-          </Paper>
-        </Grid>
-      </Grid>
+      </Box>
     </Container>
   );
 }
@@ -108,12 +109,15 @@ const priorityColors: { [key: string]: any } = {
   High: "error",
   Medium: "warning",
   Low: "success",
+  "In Progress": "warning",
+  "To Do": "error",
+  Done: "success",
 };
 
 // Assigned Tasks Table
 const AssignedTasks = ({ tasks }: any) => {
   const assignedTasks = tasks
-    .filter((task: any) => task.isblocks.length === 0)
+    // .filter((task: any) => task.isblocks.length === 0)
     .sort((a: any, b: any) => (a.priority > b.priority ? -1 : 1));
 
   return (
@@ -143,7 +147,12 @@ const AssignedTasks = ({ tasks }: any) => {
                     color={priorityColors[task.priority]}
                   />
                 </TableCell>
-                <TableCell>{task.status}</TableCell>
+                <TableCell>
+                  <Chip
+                    label={task.status}
+                    color={priorityColors[task.status]}
+                  />
+                </TableCell>
                 <TableCell>
                   {task.sprint ? task.sprint.name : "No Sprint"}
                 </TableCell>
@@ -222,6 +231,79 @@ const SummaryCards = ({ tasks }: any) => {
   );
 };
 
+const UpcomingDueTasks = ({ tasks }: any) => {
+  // Get today's date and the date 3 days from now
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const threeDaysLater = new Date();
+  threeDaysLater.setDate(today.getDate() + 3);
+  threeDaysLater.setHours(23, 59, 59, 999);
+
+  // Filter tasks that are due in the next 3 days
+
+  const upcomingTasks = tasks
+    .filter((task: any) => {
+      if (!task.duedate) return false;
+      const duedate = new Date(task.duedate);
+      return duedate >= today && duedate <= threeDaysLater;
+    })
+    .sort((a: any, b: any) => new Date(a.duedate) - new Date(b.duedate));
+
+  return (
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        Upcoming Due Tasks
+      </Typography>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {/* <TableCell>Task Key</TableCell> */}
+              <TableCell>Summary</TableCell>
+              <TableCell>Due Date</TableCell>
+              <TableCell>Current status</TableCell>
+              <TableCell>Priority</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {upcomingTasks.length > 0 ? (
+              upcomingTasks.map((task) => (
+                <TableRow key={task.id}>
+                  {/* <TableCell>{task.key}</TableCell> */}
+                  <TableCell>{task.summary}</TableCell>
+                  <TableCell>
+                    {new Date(task.duedate).toLocaleDateString()}
+                  </TableCell>
+                  {/* <TableCell>{task.status}</TableCell> */}
+                  <TableCell>
+                    <Chip
+                      label={task.status}
+                      color={priorityColors[task.status]}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={task.priority}
+                      color={priorityColors[task.priority]}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} align="center">
+                  No upcoming tasks due in the next 3 days
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  );
+};
+
 // Blocking Tasks Table
 const BlockingTasks = ({ tasks }: any) => {
   const blockingTasks = tasks.filter((task: any) => task.isblocks.length > 0);
@@ -255,8 +337,8 @@ const BlockingTasks = ({ tasks }: any) => {
                 <TableCell>
                   {task.isblocks.map((blocked: any) => (
                     <Chip
-                      key={blocked.key}
-                      label={blocked.key}
+                      key={blocked.summary}
+                      label={blocked.summary}
                       sx={{ mr: 0.5, bgcolor: "#ff7043", color: "white" }}
                     />
                   ))}
