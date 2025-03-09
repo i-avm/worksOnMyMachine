@@ -9,10 +9,10 @@ import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
 import { getServerSideConfig } from "./config/server";
 
 export const metadata: Metadata = {
-  title: "WorksOnMyMachine",
+  title: "hAlly",
   description: "Search anything...",
   appleWebApp: {
-    title: "WorksOnMyMachine",
+    title: "hAlly",
     statusBarStyle: "default",
   },
 };

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Box, TextField, Button, Typography, Paper } from "@mui/material";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export function SubmitMeetingSummary() {
   const [date, setDate] = useState("");
@@ -9,11 +11,25 @@ export function SubmitMeetingSummary() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    const meetingData = { date, title, summary };
-    await axios.post("http://192.168.28.171:8000/store_data", meetingData);
-    setDate("");
-    setTitle("");
-    setSummary("");
+
+    try {
+      if (title?.length === 0 || summary?.length === 0) {
+        toast.error("Missing data in fields!");
+        return;
+      }
+
+      const meetingData = { date, title, summary };
+      axios.post("http://192.168.28.171:8000/store_data", meetingData);
+
+      toast.error("Submitted successfully!");
+
+      setDate("");
+      setTitle("");
+      setSummary("");
+    } catch (error) {
+      // Show error toast
+      toast.error("Failed to submit meeting data.");
+    }
   };
 
   return (
@@ -27,6 +43,16 @@ export function SubmitMeetingSummary() {
         padding: 3,
       }}
     >
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <Paper
         elevation={4}
         sx={{

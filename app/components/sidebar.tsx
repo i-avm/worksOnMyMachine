@@ -252,8 +252,8 @@ export function SideBar(props: { className?: string }) {
       {...props}
     >
       <SideBarHeader
-        title="WorksOnMyMachine"
-        subTitle="bla bla bla"
+        title="hAlly"
+        subTitle="Your Smart Hexnode Ally!"
         logo={<HexnodeGenieIcon />}
         shouldNarrow={shouldNarrow}
       >

@@ -116,7 +116,7 @@ export const models = [
     params: (data: any) => sdCommonParams("ultra", data),
   },
   {
-    name: "GPT",
+    name: "Hexnode AI",
     value: "core",
     href: "/",
     params: (data: any) => sdCommonParams("core", data),

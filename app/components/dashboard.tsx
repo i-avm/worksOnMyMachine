@@ -62,24 +62,24 @@ export function Dashboard() {
       sx={{ mt: 4, height: "90vh", display: "flex", flexDirection: "column" }}
     >
       {/* Title */}
-      <Typography variant="h4" gutterBottom>
-        Jira Analytics
+      <Typography variant="inherit" gutterBottom>
+        Welcome back, Amigo 🥳
       </Typography>
 
       {/* Summary Cards (Sticky at top) */}
-      <Box sx={{ mb: 2 }}>
+      <Box sx={{ mb: 2, mt: 2 }}>
         <SummaryCards tasks={jiraTasks} />
       </Box>
 
       {/* Scrollable Content */}
       <Box sx={{ flex: 1, overflow: "auto", maxHeight: "75vh", p: 1 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <SprintProgress tasks={jiraTasks} />
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <SprintProgress tasks={jiraTasks} />
+            {/* <SprintProgress tasks={jiraTasks} /> */}
           </Grid>
 
           <Grid item xs={12}>
@@ -153,9 +153,7 @@ const AssignedTasks = ({ tasks }: any) => {
                     color={priorityColors[task.status]}
                   />
                 </TableCell>
-                <TableCell>
-                  {task.sprint ? task.sprint.name : "No Sprint"}
-                </TableCell>
+                <TableCell>{task.sprint ? task.sprint.name : "--"}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -317,31 +315,37 @@ const BlockingTasks = ({ tasks }: any) => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Task Key</TableCell>
               <TableCell>Summary</TableCell>
+              <TableCell>is Blocking</TableCell>
+              <TableCell>Current status</TableCell>
               <TableCell>Priority</TableCell>
-              <TableCell>Blocking</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {blockingTasks.map((task: any) => (
               <TableRow key={task.id}>
-                <TableCell>{task.key}</TableCell>
                 <TableCell>{task.summary}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={task.priority}
-                    color={priorityColors[task.priority]}
-                  />
-                </TableCell>
+
                 <TableCell>
                   {task.isblocks.map((blocked: any) => (
                     <Chip
                       key={blocked.summary}
                       label={blocked.summary}
-                      sx={{ mr: 0.5, bgcolor: "#ff7043", color: "white" }}
+                      sx={{ mr: 0.5, bgcolor: "grey", color: "white" }}
                     />
                   ))}
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    label={task.status}
+                    color={priorityColors[task.status]}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Chip
+                    label={task.priority}
+                    color={priorityColors[task.priority]}
+                  />
                 </TableCell>
               </TableRow>
             ))}
